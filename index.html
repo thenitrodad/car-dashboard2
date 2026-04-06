@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta<!DOCTYPE html>
-<html lang="en">
-<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -158,6 +155,13 @@
       height: 100%;
       border: 0;
       filter: saturate(1.05) contrast(1.02);
+    }
+
+    #map {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
     }
 
     .topbar {
@@ -608,11 +612,11 @@
               <div class="nav-icon">📞</div>
               <div>Calls</div>
             </button>
-            
-            <button class="nav-btn" data-view="weather">
-              <div class="nav-icon">☀️</div>
-              <div>Weather</div>
+            <button class="nav-btn" data-view="messages">
+              <div class="nav-icon">💬</div>
+              <div>Messages</div>
             </button>
+            
             <button class="nav-btn" id="modeToggleBtn">
               <div class="nav-icon">🌙</div>
               <div>Mode</div>
@@ -624,13 +628,7 @@
 
       <main class="main">
         <div class="map-layer">
-          <iframe
-            id="mapFrame"
-            loading="lazy"
-            allowfullscreen
-            referrerpolicy="no-referrer-when-downgrade"
-            src="https://www.google.com/maps?q=Michigan&output=embed">
-          </iframe>
+          <div id="map"></div>
         </div>
 
         
@@ -706,55 +704,31 @@
 
           <section class="panel overlay-view" id="callsView">
             <div class="eyebrow">Calls</div>
-            <div class="overlay-title">Contacts</div>
-            <div class="overlay-sub">A clean in-app calling style screen</div>
-            <div class="big-center">
-              <div>
-                <div class="big-icon">📱</div>
-                <div style="font-size:20px; font-weight:800;">Hands-free style layout</div>
-                <div style="margin-top:6px; color:var(--muted); font-size:14px;">This stays inside the dashboard instead of bouncing to another app.</div>
-              </div>
-            </div>
+            <div class="overlay-title">Favorites</div>
+            <div class="overlay-sub">Quick people and recent contacts</div>
             <div class="info-list">
               <div class="info-item"><span>Wife</span><strong>Recent</strong></div>
               <div class="info-item"><span>Dad</span><strong>Mobile</strong></div>
               <div class="info-item"><span>Mom</span><strong>Mobile</strong></div>
               <div class="info-item"><span>Work</span><strong>Main line</strong></div>
+              <div class="info-item"><span>Roadside</span><strong>Saved</strong></div>
             </div>
           </section>
 
-          <section class="panel overlay-view" id="carView">
-            <div class="eyebrow">Vehicle</div>
-            <div class="overlay-title">Car status</div>
-            <div class="overlay-sub">Simple dashboard stats</div>
+          <section class="panel overlay-view" id="messagesView">
+            <div class="eyebrow">Messages</div>
+            <div class="overlay-title">Recent chats</div>
+            <div class="overlay-sub">A simple in-dash message view</div>
             <div class="info-list">
-              <div class="info-item"><span>Battery</span><strong>91%</strong></div>
-              <div class="info-item"><span>Range</span><strong>287 mi</strong></div>
-              <div class="info-item"><span>Tire PSI</span><strong>34 / 35</strong></div>
-              <div class="info-item"><span>Cabin temp</span><strong>70°</strong></div>
-              <div class="info-item"><span>Drive mode</span><strong>Comfort</strong></div>
+              <div class="info-item"><span>Wife</span><strong>On our way</strong></div>
+              <div class="info-item"><span>Dad</span><strong>Call me when free</strong></div>
+              <div class="info-item"><span>Mom</span><strong>Love you guys</strong></div>
+              <div class="info-item"><span>Work</span><strong>Meeting moved</strong></div>
+              <div class="info-item"><span>Family Group</span><strong>Dinner tonight?</strong></div>
             </div>
           </section>
 
-          <section class="panel overlay-view" id="weatherView">
-            <div class="eyebrow">Weather</div>
-            <div class="overlay-title">72° and clear</div>
-            <div class="overlay-sub">Nice easy driving weather</div>
-            <div class="big-center">
-              <div>
-                <div class="big-icon">☀️</div>
-                <div style="font-size:18px; font-weight:800;">Calm conditions</div>
-                <div style="margin-top:6px; color:var(--muted); font-size:14px;">Great visibility with light wind.</div>
-              </div>
-            </div>
-            <div class="info-list">
-              <div class="info-item"><span>Wind</span><strong>6 mph</strong></div>
-              <div class="info-item"><span>Humidity</span><strong>47%</strong></div>
-              <div class="info-item"><span>Rain chance</span><strong>2%</strong></div>
-              <div class="info-item"><span>Sunset</span><strong>8:41 PM</strong></div>
-            </div>
-          </section>
-        </div>
+          </div>
       </main>
     </div>
   </div>
@@ -765,7 +739,10 @@
     const clock = document.getElementById('clock');
     const toast = document.getElementById('toast');
     const playBtn = document.getElementById('playBtn');
-    const mapFrame = document.getElementById('mapFrame');
+    let map;
+    let marker;
+    let directionsService;
+    let directionsRenderer;
     const destinationInput = document.getElementById('destinationInput');
     const routePanel = document.getElementById('routePanel');
     const routeTitle = document.getElementById('routeTitle');
@@ -782,8 +759,7 @@
       map: null,
       music: document.getElementById('musicView'),
       calls: document.getElementById('callsView'),
-      car: document.getElementById('carView'),
-      weather: document.getElementById('weatherView')
+      messages: document.getElementById('messagesView')
     };
 
     function updateClock() {
@@ -818,26 +794,100 @@
       const headlines = {
         map: currentDestination ? `Route to ${currentDestination}` : 'Beautiful drive dashboard',
         music: 'Music and media',
-        calls: 'Call screen',
-        car: 'Vehicle info',
-        weather: 'Weather view'
+        calls: 'Calls',
+        messages: 'Messages'
       };
 
       headlineText.textContent = headlines[viewName] || 'Beautiful drive dashboard';
     }
 
-    function setMapQuery(query) {
-      const value = (query || '').trim();
-      if (!value) return;
+    function initMap() {
+      const start = { lat: 44.3148, lng: -85.6024 };
+
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: start,
+        zoom: 7,
+        disableDefaultUI: true,
+        zoomControl: true,
+        gestureHandling: 'greedy'
+      });
+
+      marker = new google.maps.Marker({
+        position: start,
+        map: map
+      });
+
+      directionsService = new google.maps.DirectionsService();
+      directionsRenderer = new google.maps.DirectionsRenderfunction goDestination() {
+      const value = destinationInput.value.trim();
+      if (!value) {
+        showToast('Enter a destination first');
+        return;
+      }
+      currentDestination = value;
+      routeTitle.textContent = value;
+      routePanel.classList.add('show');
+
+      if (!navigator.geolocation) {
+        setMapQuery(value);
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const origin = {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude
+        };
+
+        directionsService.route({
+          origin,
+          destination: value,
+          travelMode: google.maps.TravelMode.DRIVING
+        }, (result, status) => {
+          if (status === 'OK') {
+            directionsRenderer.setDirections(result);
+            const leg = result.routes[0]?.legs?.[0];
+            if (leg) {
+              document.querySelectorAll('.meta-value')[0].textContent = new Date(Date.now() + leg.duration.value * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+              document.querySelectorAll('.meta-value')[1].textContent = leg.duration.text;
+              document.querySelectorAll('.meta-value')[2].textContent = leg.distance.text;
+            }
+            if (currentView === 'map') {
+              headlineText.textContent = `Route to ${value}`;
+            }
+            showToast(`Route ready: ${value}`);
+          } else {
+            setMapQuery(value);
+            showToast('Could not calculate route');
+          }
+        });
+      }, () => {
+        setMapQuery(value);
+      });
+      setView('map');
+    }
+
+    function clearRoutey || '').trim();
+      if (!value || !map) return;
       currentDestination = value;
       destinationInput.value = value;
       routeTitle.textContent = value;
       routePanel.classList.add('show');
-      mapFrame.src = `https://www.google.com/maps?q=${encodeURIComponent(value)}&output=embed`;
-      if (currentView === 'map') {
-        headlineText.textContent = `Route to ${value}`;
-      }
-      showToast(`Destination set: ${value}`);
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode({ address: value }, (results, status) => {
+        if (status === 'OK' && results[0]) {
+          const location = results[0].geometry.location;
+          map.panTo(location);
+          map.setZoom(13);
+          marker.setPosition(location);
+          if (currentView === 'map') {
+            headlineText.textContent = `Route to ${value}`;
+          }
+          showToast(`Destination set: ${value}`);
+        } else {
+          showToast('Location not found');
+        }
+      });
     }
 
     function goDestination() {
@@ -854,7 +904,13 @@
       currentDestination = '';
       destinationInput.value = '';
       routePanel.classList.remove('show');
-      mapFrame.src = 'https://www.google.com/maps?q=Michigan&output=embed';
+      if (directionsRenderer) directionsRenderer.set('directions', null);
+      if (map && marker) {
+        const start = { lat: 44.3148, lng: -85.6024 };
+        map.panTo(start);
+        map.setZoom(7);
+        marker.setPosition(start);
+      }
       if (currentView === 'map') {
         headlineText.textContent = 'Beautiful drive dashboard';
       }
@@ -921,219 +977,6 @@
 
     setView('map');
   </script>
-</body>
-</html>
- charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-<title>RoadGlow</title>
-
-<style>
-body {
-  margin:0;
-  font-family:system-ui;
-  background:#0c1d33;
-  color:white;
-  overflow:hidden;
-}
-
-.shell {
-  display:grid;
-  grid-template-columns:80px 1fr;
-  height:100vh;
-}
-
-.sidebar {
-  background:#0b1626;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  padding:10px;
-  gap:12px;
-}
-
-.nav-btn {
-  background:rgba(255,255,255,0.05);
-  border:none;
-  border-radius:20px;
-  padding:12px;
-  color:white;
-  width:100%;
-  cursor:pointer;
-}
-
-.main {
-  position:relative;
-}
-
-/* MAP */
-#map {
-  position:absolute;
-  inset:0;
-}
-
-/* SEARCH */
-.search-panel {
-  position:absolute;
-  top:80px;
-  left:96px;
-  background:rgba(0,0,0,0.5);
-  backdrop-filter:blur(20px);
-  padding:20px;
-  border-radius:20px;
-  z-index:5;
-  width:300px;
-}
-
-.search-row {
-  display:flex;
-  gap:10px;
-}
-
-input {
-  flex:1;
-  padding:12px;
-  border-radius:15px;
-  border:none;
-  background:rgba(255,255,255,0.1);
-  color:white;
-}
-
-button.go {
-  background:#7be8ff;
-  border:none;
-  padding:12px;
-  border-radius:50%;
-}
-
-/* MUSIC BUTTONS */
-.button-row {
-  position:absolute;
-  bottom:40px;
-  right:40px;
-  display:flex;
-  gap:12px;
-}
-
-.media-btn {
-  width:60px;
-  height:60px;
-  border-radius:50%;
-  background:rgba(255,255,255,0.1);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:20px;
-}
-
-.media-btn.main {
-  width:80px;
-  height:80px;
-  background:#7be8ff;
-  color:black;
-}
-</style>
-</head>
-
-<body>
-
-<div class="shell">
-
-<!-- SIDEBAR -->
-<div class="sidebar">
-
-<div>
-<svg width="30" height="30" viewBox="0 0 64 64" fill="none">
-<rect x="10" y="28" width="44" height="16" rx="4" fill="white"/>
-<circle cx="20" cy="46" r="5" fill="#7be8ff"/>
-<circle cx="44" cy="46" r="5" fill="#7be8ff"/>
-</svg>
-</div>
-
-<button class="nav-btn">Map</button>
-<button class="nav-btn">Music</button>
-<button class="nav-btn">Calls</button>
-<button class="nav-btn">Weather</button>
-
-</div>
-
-<!-- MAIN -->
-<div class="main">
-
-<div id="map"></div>
-
-<!-- SEARCH -->
-<div class="search-panel">
-<div>Where to?</div>
-
-<div class="search-row">
-<input id="destinationInput" placeholder="Enter destination"/>
-<button class="go" onclick="goDestination()">Go</button>
-</div>
-</div>
-
-<!-- MUSIC -->
-<div class="button-row">
-<div class="media-btn">⏮</div>
-<div class="media-btn main" id="playBtn" onclick="togglePlay()">⏸</div>
-<div class="media-btn">⏭</div>
-</div>
-
-</div>
-
-</div>
-
-<script>
-let map;
-let marker;
-let playing = true;
-
-function initMap() {
-  const start = { lat: 44.3148, lng: -85.6024 };
-
-  map = new google.maps.Map(document.getElementById("map"), {
-    center: start,
-    zoom: 7,
-    disableDefaultUI: true,
-    zoomControl: true,
-    gestureHandling: "greedy"
-  });
-
-  marker = new google.maps.Marker({
-    position: start,
-    map: map
-  });
-}
-
-function goDestination() {
-  const value = document.getElementById("destinationInput").value;
-
-  if (!value) return;
-
-  const geocoder = new google.maps.Geocoder();
-
-  geocoder.geocode({ address: value }, (results, status) => {
-    if (status === "OK") {
-      const loc = results[0].geometry.location;
-      map.panTo(loc);
-      map.setZoom(13);
-      marker.setPosition(loc);
-    }
-  });
-}
-
-function togglePlay() {
-  playing = !playing;
-  document.getElementById("playBtn").innerText = playing ? "⏸" : "▶";
-}
-</script>
-
-<script async
-src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCoCxyWxvlNTV-AHCaLg2CXxeqFGr-8mEI&callback=initMap">
-</script>
-
+<script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCoCxyWxvlNTV-AHCaLg2CXxeqFGr-8mEI&callback=initMap"></script>
 </body>
 </html>
