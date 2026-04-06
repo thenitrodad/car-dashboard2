@@ -686,11 +686,11 @@
               <div class="nav-icon">🎵</div>
               <div>Music</div>
             </button>
-            <button class="nav-btn" data-view="calls">
+            <button class="nav-btn" id="callsBtn">
               <div class="nav-icon">📞</div>
               <div>Calls</div>
             </button>
-            <button class="nav-btn" data-view="messages">
+            <button class="nav-btn" id="messagesBtn">
               <div class="nav-icon">💬</div>
               <div>Messages</div>
             </button>
@@ -699,10 +699,7 @@
               <div class="nav-icon">🕒</div>
               <div>Clock</div>
             </button>
-            <button class="nav-btn" id="modeToggleBtn">
-              <div class="nav-icon">🌙</div>
-              <div>Mode</div>
-            </button>
+            
           </div>
         </div>
         <div class="sidebar-note">One screen landscape</div>
@@ -764,15 +761,9 @@
   <div class="overlay-sub">Connect your music app</div>
 </section>
 
-          <section class="panel overlay-view" id="callsView">
-  <div class="overlay-title">Calls</div>
-  <div class="overlay-sub">Connect phone for calling</div>
-</section>
+          
 
-          <section class="panel overlay-view" id="messagesView">
-  <div class="overlay-title">Messages</div>
-  <div class="overlay-sub">Connect phone for messages</div>
-</section>
+          
 
           <section class="panel overlay-view" id="clockView">
             <div class="clock-screen">
@@ -813,8 +804,6 @@
     const views = {
       map: null,
       music: document.getElementById('musicView'),
-      calls: document.getElementById('callsView'),
-      messages: document.getElementById('messagesView'),
       clock: document.getElementById('clockView')
     };
 
@@ -843,8 +832,16 @@
 
     function setActiveNav(viewName) {
       navButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.view === viewName);
-      });
+      btn.addEventListener('click', () => setView(btn.dataset.view));
+    });
+
+    document.getElementById('callsBtn').addEventListener('click', () => {
+      window.location.href = 'tel:';
+    });
+
+    document.getElementById('messagesBtn').addEventListener('click', () => {
+      window.location.href = 'sms:';
+    });
     }
 
     function setView(viewName) {
@@ -858,8 +855,6 @@
       const headlines = {
         map: currentDestination ? `Route to ${currentDestination}` : 'Beautiful drive dashboard',
         music: 'Music and media',
-        calls: 'Calls',
-        messages: 'Messages',
         clock: 'Clock'
       };
 
@@ -1045,7 +1040,7 @@
       }
     });
     document.getElementById('clearRouteBtn').addEventListener('click', clearRoute);
-    document.getElementById('modeToggleBtn').addEventListener('click', toggleMode);
+    
     document.getElementById('topModeBtn').addEventListener('click', toggleMode);
     playBtn.addEventListener('click', togglePlay);
     document.getElementById('prevBtn').addEventListener('click', () => showToast('Previous track'));
