@@ -79,10 +79,15 @@
       display: grid;
       place-items: center;
       border-radius: 16px;
-      font-size: 23px;
+      color: #f4fbff;
       background: linear-gradient(135deg, rgba(123,232,255,0.3), rgba(159,133,255,0.2));
       border: 1px solid rgba(255,255,255,0.12);
       box-shadow: 0 10px 26px rgba(0,0,0,0.24);
+    }
+
+    .brand-badge svg {
+      display: block;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.22));
     }
 
     .nav {
@@ -536,7 +541,18 @@
       <aside class="sidebar">
         <div>
           <div class="brand">
-            <div class="brand-badge">🚗</div>
+            <div class="brand-badge" aria-label="RoadGlow logo">
+              <svg width="26" height="26" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 36L22 22C23.2 19.2 25.9 17.4 29 17.4H35C38.1 17.4 40.8 19.2 42 22L48 36" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12.8 34.5H51.2C54.4 34.5 57 37.1 57 40.3V44.8C57 47.6 54.7 49.9 51.9 49.9H49.5C48.5 49.9 47.7 49.1 47.7 48.1V46.6H16.3V48.1C16.3 49.1 15.5 49.9 14.5 49.9H12.1C9.3 49.9 7 47.6 7 44.8V40.3C7 37.1 9.6 34.5 12.8 34.5Z" fill="currentColor" fill-opacity="0.9"/>
+                <path d="M20 26.5H44" stroke="#7BE8FF" stroke-width="2.8" stroke-linecap="round"/>
+                <circle cx="19" cy="42.5" r="4.6" fill="#06111D" stroke="#7BE8FF" stroke-width="2.4"/>
+                <circle cx="45" cy="42.5" r="4.6" fill="#06111D" stroke="#7BE8FF" stroke-width="2.4"/>
+                <path d="M23.5 30.5H40.5" stroke="#DFFBFF" stroke-width="2.2" stroke-linecap="round" opacity="0.9"/>
+                <path d="M13.5 39H18.5" stroke="#9F85FF" stroke-width="2.6" stroke-linecap="round"/>
+                <path d="M45.5 39H50.5" stroke="#9F85FF" stroke-width="2.6" stroke-linecap="round"/>
+              </svg>
+            </div>
           </div>
           <div class="nav">
             <button class="nav-btn active" data-view="map">
