@@ -8,7 +8,6 @@
     :root {
       --bg1: #020613;
       --bg2: #09162c;
-      --card: rgba(255,255,255,0.08);
       --line: rgba(255,255,255,0.10);
       --text: #f5fbff;
       --muted: rgba(245,251,255,0.62);
@@ -17,7 +16,11 @@
       --shadow: 0 24px 80px rgba(0,0,0,0.42);
     }
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     html, body {
       margin: 0;
       width: 100%;
@@ -95,14 +98,20 @@
       transition: transform .15s ease, background .2s ease, color .2s ease;
     }
 
-    .nav-btn:active { transform: scale(.97); }
+    .nav-btn:active {
+      transform: scale(.97);
+    }
+
     .nav-btn.active {
       background: linear-gradient(180deg, #fafdff, #dceff8);
       color: #09121c;
       box-shadow: 0 12px 30px rgba(255,255,255,0.16);
     }
 
-    .nav-icon { font-size: 22px; line-height: 1; }
+    .nav-icon {
+      font-size: 22px;
+      line-height: 1;
+    }
 
     .main {
       min-width: 0;
@@ -122,56 +131,22 @@
       position: absolute;
       inset: 0;
       overflow: hidden;
-      background:
-        linear-gradient(135deg, rgba(19,39,70,0.96), rgba(5,10,18,0.96));
+      background: linear-gradient(135deg, rgba(19,39,70,0.96), rgba(5,10,18,0.96));
     }
 
-    .map-layer::before {
-      content: "";
+    .map-layer iframe {
       position: absolute;
       inset: 0;
-      opacity: 0.18;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.10) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.10) 1px, transparent 1px);
-      background-size: 48px 48px;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      filter: saturate(1.05) contrast(1.02);
     }
-
-    .road, .road2, .road3, .road4, .route {
-      position: absolute;
-      border-radius: 999px;
-    }
-
-    .road, .road2, .road3, .road4 {
-      background: rgba(255,255,255,0.11);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
-    }
-
-    .route {
-      background: linear-gradient(180deg, #7ae8ff, #dffbff);
-      box-shadow: 0 0 24px rgba(115,231,255,0.42);
-    }
-
-    .road { left: 10%; top: 6%; width: 18px; height: 84%; }
-    .road2 { left: 31%; top: 15%; width: 14px; height: 64%; }
-    .road3 { left: 58%; top: 10%; width: 18px; height: 70%; }
-    .road4 { left: 78%; top: 22%; width: 14px; height: 54%; }
-    .route { left: 9.25%; top: 36%; width: 32px; height: 30%; }
-
-    .city-glow, .city-glow2, .city-glow3 {
-      position: absolute;
-      border-radius: 999px;
-      filter: blur(50px);
-      opacity: 0.42;
-    }
-    .city-glow { left: 4%; top: 12%; width: 180px; height: 180px; background: rgba(115,231,255,0.20); }
-    .city-glow2 { right: 10%; top: 10%; width: 170px; height: 170px; background: rgba(159,124,255,0.18); }
-    .city-glow3 { left: 42%; bottom: 8%; width: 220px; height: 220px; background: rgba(255,255,255,0.07); }
 
     .panel {
       position: absolute;
       border: 1px solid var(--line);
-      background: rgba(6,12,22,0.56);
+      background: rgba(6,12,22,0.58);
       backdrop-filter: blur(20px);
       box-shadow: var(--shadow);
       border-radius: 28px;
@@ -187,6 +162,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 16px;
+      z-index: 3;
     }
 
     .title-wrap {
@@ -254,6 +230,7 @@
       top: 106px;
       width: 380px;
       padding: 16px;
+      z-index: 3;
     }
 
     .search-row {
@@ -273,13 +250,16 @@
       outline: none;
     }
 
-    .search-row input::placeholder { color: rgba(245,251,255,0.42); }
+    .search-row input::placeholder {
+      color: rgba(245,251,255,0.42);
+    }
 
     .route-card {
       left: 16px;
       bottom: 16px;
       width: 420px;
       padding: 18px;
+      z-index: 3;
     }
 
     .route-top {
@@ -316,8 +296,16 @@
       padding: 12px;
     }
 
-    .meta .label { color: var(--muted); font-size: 12px; }
-    .meta .value { font-size: 20px; font-weight: 800; margin-top: 4px; }
+    .meta .label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .meta .value {
+      font-size: 20px;
+      font-weight: 800;
+      margin-top: 4px;
+    }
 
     .actions {
       display: flex;
@@ -330,6 +318,7 @@
       bottom: 16px;
       width: 340px;
       padding: 18px;
+      z-index: 3;
     }
 
     .album {
@@ -385,6 +374,7 @@
       top: 106px;
       width: 250px;
       padding: 16px;
+      z-index: 3;
     }
 
     .status-grid {
@@ -402,18 +392,6 @@
       border: 1px solid rgba(255,255,255,0.06);
       border-radius: 18px;
       font-size: 15px;
-    }
-
-    .center-pin {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 24px;
-      height: 24px;
-      border-radius: 999px;
-      background: linear-gradient(180deg, #ffffff, var(--accent));
-      box-shadow: 0 0 0 8px rgba(115,231,255,0.12), 0 0 28px rgba(115,231,255,0.45);
     }
 
     .toast {
@@ -443,20 +421,65 @@
         width: auto;
         max-width: calc(100% - 32px);
       }
-      .title { font-size: 22px; }
-      .shell { grid-template-columns: 86px 1fr; }
+
+      .title {
+        font-size: 22px;
+      }
+
+      .shell {
+        grid-template-columns: 86px 1fr;
+      }
     }
 
     @media (max-width: 880px) {
-      .app { padding: 10px; }
-      .shell { grid-template-columns: 78px 1fr; gap: 10px; }
-      .topbar { left: 10px; right: 10px; top: 10px; }
-      .search-panel { left: 10px; top: 98px; width: 300px; }
-      .status-panel { right: 10px; top: 98px; width: 200px; }
-      .route-card { left: 10px; bottom: 10px; width: 320px; }
-      .media-panel { right: 10px; bottom: 10px; width: 280px; }
-      .meta-grid { grid-template-columns: 1fr; }
-      .brand-badge { width: 46px; height: 46px; font-size: 20px; }
+      .app {
+        padding: 10px;
+      }
+
+      .shell {
+        grid-template-columns: 78px 1fr;
+        gap: 10px;
+      }
+
+      .topbar {
+        left: 10px;
+        right: 10px;
+        top: 10px;
+      }
+
+      .search-panel {
+        left: 10px;
+        top: 98px;
+        width: 300px;
+      }
+
+      .status-panel {
+        right: 10px;
+        top: 98px;
+        width: 200px;
+      }
+
+      .route-card {
+        left: 10px;
+        bottom: 10px;
+        width: 320px;
+      }
+
+      .media-panel {
+        right: 10px;
+        bottom: 10px;
+        width: 280px;
+      }
+
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .brand-badge {
+        width: 46px;
+        height: 46px;
+        font-size: 20px;
+      }
     }
   </style>
 </head>
@@ -468,29 +491,54 @@
           <div class="brand">
             <div class="brand-badge">🚗</div>
           </div>
+
           <div class="nav">
-            <button class="nav-btn active" onclick="focusMode('home')"><div class="nav-icon">🏠</div><div>Home</div></button>
-            <button class="nav-btn" onclick="openMaps('Coffee near me')"><div class="nav-icon">🗺️</div><div>Maps</div></button>
-            <button class="nav-btn" onclick="openMusic()"><div class="nav-icon">🎵</div><div>Music</div></button>
-            <button class="nav-btn" onclick="showToast('Calling screen can be added here')"><div class="nav-icon">📞</div><div>Calls</div></button>
-            <button class="nav-btn" onclick="showToast('Vehicle widgets can live here')"><div class="nav-icon">🚙</div><div>Car</div></button>
-            <button class="nav-btn" onclick="toggleMode()"><div class="nav-icon">🌙</div><div>Mode</div></button>
+            <button class="nav-btn active" onclick="showToast('Home dashboard')">
+              <div class="nav-icon">🏠</div>
+              <div>Home</div>
+            </button>
+
+            <button class="nav-btn" onclick="setMapQuery('Coffee near me')">
+              <div class="nav-icon">🗺️</div>
+              <div>Maps</div>
+            </button>
+
+            <button class="nav-btn" onclick="showToast('Media controls stay in this dashboard')">
+              <div class="nav-icon">🎵</div>
+              <div>Music</div>
+            </button>
+
+            <button class="nav-btn" onclick="showToast('Calling screen can be added here')">
+              <div class="nav-icon">📞</div>
+              <div>Calls</div>
+            </button>
+
+            <button class="nav-btn" onclick="showToast('Vehicle widgets can live here')">
+              <div class="nav-icon">🚙</div>
+              <div>Car</div>
+            </button>
+
+            <button class="nav-btn" onclick="toggleMode()">
+              <div class="nav-icon">🌙</div>
+              <div>Mode</div>
+            </button>
           </div>
         </div>
-        <div style="text-align:center; color:var(--muted); font-size:11px; padding:4px 2px 2px;">One screen landscape</div>
+
+        <div style="text-align:center; color:var(--muted); font-size:11px; padding:4px 2px 2px;">
+          One screen landscape
+        </div>
       </aside>
 
       <main class="main">
         <div class="map-layer">
-          <div class="city-glow"></div>
-          <div class="city-glow2"></div>
-          <div class="city-glow3"></div>
-          <div class="road"></div>
-          <div class="road2"></div>
-          <div class="road3"></div>
-          <div class="road4"></div>
-          <div class="route"></div>
-          <div class="center-pin"></div>
+          <iframe
+            id="mapFrame"
+            loading="lazy"
+            allowfullscreen
+            referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.google.com/maps?q=Coffee%20near%20me&output=embed">
+          </iframe>
         </div>
 
         <div class="panel topbar">
@@ -498,6 +546,7 @@
             <div class="eyebrow">RoadGlow live view</div>
             <div class="title">Scenic drive dashboard</div>
           </div>
+
           <div class="top-right">
             <div class="pill">🕒 <span id="clock">3:45 PM</span></div>
             <button class="icon-btn" onclick="toggleMode()">☼</button>
@@ -507,6 +556,7 @@
         <div class="panel search-panel">
           <div class="eyebrow">Destination</div>
           <div style="font-size:20px; font-weight:800;">Where to?</div>
+
           <div class="search-row">
             <input id="destinationInput" value="Coffee near me" placeholder="Search destination" />
             <button class="action-btn primary" onclick="goDestination()">Go</button>
@@ -515,6 +565,7 @@
 
         <div class="panel status-panel">
           <div class="eyebrow">Drive status</div>
+
           <div class="status-grid">
             <div class="status-item"><span>Weather</span><strong>72° clear</strong></div>
             <div class="status-item"><span>Battery</span><strong>91%</strong></div>
@@ -529,17 +580,29 @@
               <div class="eyebrow">Current route</div>
               <div style="font-size:26px; font-weight:800;">Downtown route</div>
             </div>
+
             <div class="route-banner">➡ Right in 600 ft</div>
           </div>
+
           <div class="meta-grid">
-            <div class="meta"><div class="label">ETA</div><div class="value">4:22 PM</div></div>
-            <div class="meta"><div class="label">Time</div><div class="value">18 min</div></div>
-            <div class="meta"><div class="label">Distance</div><div class="value">8.4 mi</div></div>
+            <div class="meta">
+              <div class="label">ETA</div>
+              <div class="value">4:22 PM</div>
+            </div>
+            <div class="meta">
+              <div class="label">Time</div>
+              <div class="value">18 min</div>
+            </div>
+            <div class="meta">
+              <div class="label">Distance</div>
+              <div class="value">8.4 mi</div>
+            </div>
           </div>
+
           <div class="actions">
-            <button class="action-btn primary" onclick="openMaps(document.getElementById('destinationInput').value)">Open Apple Maps</button>
-            <button class="action-btn" onclick="openMaps('Gas station near me')">Gas</button>
-            <button class="action-btn" onclick="openMaps('Home')">Home</button>
+            <button class="action-btn primary" onclick="goDestination()">Update Map</button>
+            <button class="action-btn" onclick="setMapQuery('Gas station near me')">Gas</button>
+            <button class="action-btn" onclick="setMapQuery('Home')">Home</button>
           </div>
         </div>
 
@@ -547,13 +610,16 @@
           <div class="eyebrow">Now playing</div>
           <div style="font-size:22px; font-weight:800;">Night Drive</div>
           <div style="color:var(--muted); margin-top:4px;">The Midnight Coast</div>
+
           <div class="album"></div>
+
           <div class="progress"><div></div></div>
+
           <div class="control-row">
             <button class="mini-btn" onclick="showToast('Previous track')">⏮</button>
             <button class="mini-btn primary" onclick="togglePlay()" id="playBtn">⏸ Pause</button>
             <button class="mini-btn" onclick="showToast('Next track')">⏭</button>
-            <button class="mini-btn" onclick="openMusic()">Open</button>
+            <button class="mini-btn" onclick="showToast('Music stays inside this dashboard mockup')">Open</button>
           </div>
         </div>
       </main>
@@ -566,13 +632,20 @@
     const clock = document.getElementById('clock');
     const toast = document.getElementById('toast');
     const playBtn = document.getElementById('playBtn');
+    const mapFrame = document.getElementById('mapFrame');
+    const destinationInput = document.getElementById('destinationInput');
+
     let playing = true;
     let dayMode = false;
 
     function updateClock() {
       const now = new Date();
-      clock.textContent = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      clock.textContent = now.toLocaleTimeString([], {
+        hour: 'numeric',
+        minute: '2-digit'
+      });
     }
+
     updateClock();
     setInterval(updateClock, 30000);
 
@@ -583,18 +656,17 @@
       showToast.timer = setTimeout(() => toast.classList.remove('show'), 2200);
     }
 
-    function openMaps(query) {
-      const q = encodeURIComponent(query || 'Destination');
-      window.location.href = `https://maps.apple.com/?q=${q}`;
+    function setMapQuery(query) {
+      const value = query || 'Coffee near me';
+      destinationInput.value = value;
+      const q = encodeURIComponent(value);
+      mapFrame.src = `https://www.google.com/maps?q=${q}&output=embed`;
+      showToast(`Map updated: ${value}`);
     }
 
     function goDestination() {
-      const value = document.getElementById('destinationInput').value.trim() || 'Coffee near me';
-      openMaps(value);
-    }
-
-    function openMusic() {
-      window.location.href = 'https://www.pandora.com';
+      const value = destinationInput.value.trim() || 'Coffee near me';
+      setMapQuery(value);
     }
 
     function togglePlay() {
@@ -605,6 +677,7 @@
 
     function toggleMode() {
       dayMode = !dayMode;
+
       if (dayMode) {
         document.documentElement.style.setProperty('--bg1', '#eef5ff');
         document.documentElement.style.setProperty('--bg2', '#dbe9ff');
@@ -620,10 +693,6 @@
         document.documentElement.style.setProperty('--muted', 'rgba(245,251,255,0.62)');
         showToast('Night mode on');
       }
-    }
-
-    function focusMode() {
-      showToast('This is the single-screen home layout');
     }
   </script>
 </body>
