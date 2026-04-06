@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>RoadGlow Dashboard</title>
+  <style>
+    :root {
+      --bg1: #020613;
+      --bg2: #09162c;
+      --card: rgba(255,255,255,0.08);
+      --line: rgba(255,255,255,0.10);
+      --text: #f5fbff;
+      --muted: rgba(245,251,255,0.62);
+      --accent: #73e7ff;
+      --accent2: #9f7cff;
+      --shadow: 0 24px 80px rgba(0,0,0,0.42);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(115,231,255,0.18), transparent 26%),
+        radial-gradient(circle at bottom right, rgba(159,124,255,0.16), transparent 24%),
+        linear-gradient(180deg, var(--bg2), var(--bg1));
+      color: var(--text);
+    }
+
+    .app {
+      height: 100vh;
+      padding: 14px;
+    }
+
+    .shell {
+      height: 100%;
+      display: grid;
+      grid-template-columns: 94px 1fr;
+      gap: 14px;
+    }
+
+    .sidebar {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--line);
+      border-radius: 32px;
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      backdrop-filter: blur(22px);
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      width: 100%;
+      display: grid;
+      place-items: center;
+      padding: 8px 0 2px;
+    }
+
+    .brand-badge {
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      background: linear-gradient(135deg, rgba(115,231,255,0.28), rgba(159,124,255,0.22));
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    .nav {
+      display: grid;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      border: none;
+      width: 100%;
+      border-radius: 26px;
+      padding: 12px 6px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      display: grid;
+      justify-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .15s ease, background .2s ease, color .2s ease;
+    }
+
+    .nav-btn:active { transform: scale(.97); }
+    .nav-btn.active {
+      background: linear-gradient(180deg, #fafdff, #dceff8);
+      color: #09121c;
+      box-shadow: 0 12px 30px rgba(255,255,255,0.16);
+    }
+
+    .nav-icon { font-size: 22px; line-height: 1; }
+
+    .main {
+      min-width: 0;
+      position: relative;
+      overflow: hidden;
+      border-radius: 36px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(115,231,255,0.14), transparent 22%),
+        radial-gradient(circle at 82% 18%, rgba(159,124,255,0.12), transparent 18%),
+        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      backdrop-filter: blur(24px);
+    }
+
+    .map-layer {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(19,39,70,0.96), rgba(5,10,18,0.96));
+    }
+
+    .map-layer::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.18;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.10) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.10) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    .road, .road2, .road3, .road4, .route {
+      position: absolute;
+      border-radius: 999px;
+    }
+
+    .road, .road2, .road3, .road4 {
+      background: rgba(255,255,255,0.11);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+    }
+
+    .route {
+      background: linear-gradient(180deg, #7ae8ff, #dffbff);
+      box-shadow: 0 0 24px rgba(115,231,255,0.42);
+    }
+
+    .road { left: 10%; top: 6%; width: 18px; height: 84%; }
+    .road2 { left: 31%; top: 15%; width: 14px; height: 64%; }
+    .road3 { left: 58%; top: 10%; width: 18px; height: 70%; }
+    .road4 { left: 78%; top: 22%; width: 14px; height: 54%; }
+    .route { left: 9.25%; top: 36%; width: 32px; height: 30%; }
+
+    .city-glow, .city-glow2, .city-glow3 {
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(50px);
+      opacity: 0.42;
+    }
+    .city-glow { left: 4%; top: 12%; width: 180px; height: 180px; background: rgba(115,231,255,0.20); }
+    .city-glow2 { right: 10%; top: 10%; width: 170px; height: 170px; background: rgba(159,124,255,0.18); }
+    .city-glow3 { left: 42%; bottom: 8%; width: 220px; height: 220px; background: rgba(255,255,255,0.07); }
+
+    .panel {
+      position: absolute;
+      border: 1px solid var(--line);
+      background: rgba(6,12,22,0.56);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow);
+      border-radius: 28px;
+      color: var(--text);
+    }
+
+    .topbar {
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .title-wrap {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.05;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pill, .icon-btn, .action-btn {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.07);
+      color: var(--text);
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .pill {
+      padding: 10px 14px;
+      font-size: 14px;
+    }
+
+    .icon-btn {
+      width: 52px;
+      height: 52px;
+      font-size: 22px;
+    }
+
+    .action-btn {
+      padding: 12px 18px;
+      font-size: 16px;
+    }
+
+    .action-btn.primary {
+      background: linear-gradient(90deg, var(--accent), #ddfbff);
+      color: #08121b;
+      border: none;
+    }
+
+    .search-panel {
+      left: 16px;
+      top: 106px;
+      width: 380px;
+      padding: 16px;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .search-row input {
+      flex: 1;
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px 16px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .search-row input::placeholder { color: rgba(245,251,255,0.42); }
+
+    .route-card {
+      left: 16px;
+      bottom: 16px;
+      width: 420px;
+      padding: 18px;
+    }
+
+    .route-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .route-banner {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), #abf5ff);
+      color: #061019;
+      font-weight: 800;
+      box-shadow: 0 12px 30px rgba(115,231,255,0.24);
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .meta {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 12px;
+    }
+
+    .meta .label { color: var(--muted); font-size: 12px; }
+    .meta .value { font-size: 20px; font-weight: 800; margin-top: 4px; }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .media-panel {
+      right: 16px;
+      bottom: 16px;
+      width: 340px;
+      padding: 18px;
+    }
+
+    .album {
+      height: 132px;
+      border-radius: 24px;
+      margin: 12px 0 14px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.16), transparent 28%),
+        linear-gradient(135deg, rgba(255,80,176,0.34), rgba(115,231,255,0.22), rgba(159,124,255,0.22));
+    }
+
+    .progress {
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.08);
+      margin-bottom: 14px;
+    }
+
+    .progress > div {
+      width: 56%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #fff);
+      border-radius: inherit;
+    }
+
+    .control-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .mini-btn {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border-radius: 18px;
+      padding: 12px 14px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .mini-btn.primary {
+      background: linear-gradient(90deg, var(--accent), #dbfbff);
+      color: #08111b;
+      border: none;
+    }
+
+    .status-panel {
+      right: 16px;
+      top: 106px;
+      width: 250px;
+      padding: 16px;
+    }
+
+    .status-grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      font-size: 15px;
+    }
+
+    .center-pin {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #ffffff, var(--accent));
+      box-shadow: 0 0 0 8px rgba(115,231,255,0.12), 0 0 28px rgba(115,231,255,0.45);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%) translateY(18px);
+      opacity: 0;
+      pointer-events: none;
+      transition: .25s ease;
+      padding: 14px 18px;
+      border-radius: 999px;
+      background: rgba(7,12,22,0.88);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+      z-index: 10;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 1100px) {
+      .search-panel, .route-card, .media-panel, .status-panel {
+        width: auto;
+        max-width: calc(100% - 32px);
+      }
+      .title { font-size: 22px; }
+      .shell { grid-template-columns: 86px 1fr; }
+    }
+
+    @media (max-width: 880px) {
+      .app { padding: 10px; }
+      .shell { grid-template-columns: 78px 1fr; gap: 10px; }
+      .topbar { left: 10px; right: 10px; top: 10px; }
+      .search-panel { left: 10px; top: 98px; width: 300px; }
+      .status-panel { right: 10px; top: 98px; width: 200px; }
+      .route-card { left: 10px; bottom: 10px; width: 320px; }
+      .media-panel { right: 10px; bottom: 10px; width: 280px; }
+      .meta-grid { grid-template-columns: 1fr; }
+      .brand-badge { width: 46px; height: 46px; font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="shell">
+      <aside class="sidebar">
+        <div>
+          <div class="brand">
+            <div class="brand-badge">🚗</div>
+          </div>
+          <div class="nav">
+            <button class="nav-btn active" onclick="focusMode('home')"><div class="nav-icon">🏠</div><div>Home</div></button>
+            <button class="nav-btn" onclick="openMaps('Coffee near me')"><div class="nav-icon">🗺️</div><div>Maps</div></button>
+            <button class="nav-btn" onclick="openMusic()"><div class="nav-icon">🎵</div><div>Music</div></button>
+            <button class="nav-btn" onclick="showToast('Calling screen can be added here')"><div class="nav-icon">📞</div><div>Calls</div></button>
+            <button class="nav-btn" onclick="showToast('Vehicle widgets can live here')"><div class="nav-icon">🚙</div><div>Car</div></button>
+            <button class="nav-btn" onclick="toggleMode()"><div class="nav-icon">🌙</div><div>Mode</div></button>
+          </div>
+        </div>
+        <div style="text-align:center; color:var(--muted); font-size:11px; padding:4px 2px 2px;">One screen landscape</div>
+      </aside>
+
+      <main class="main">
+        <div class="map-layer">
+          <div class="city-glow"></div>
+          <div class="city-glow2"></div>
+          <div class="city-glow3"></div>
+          <div class="road"></div>
+          <div class="road2"></div>
+          <div class="road3"></div>
+          <div class="road4"></div>
+          <div class="route"></div>
+          <div class="center-pin"></div>
+        </div>
+
+        <div class="panel topbar">
+          <div class="title-wrap">
+            <div class="eyebrow">RoadGlow live view</div>
+            <div class="title">Scenic drive dashboard</div>
+          </div>
+          <div class="top-right">
+            <div class="pill">🕒 <span id="clock">3:45 PM</span></div>
+            <button class="icon-btn" onclick="toggleMode()">☼</button>
+          </div>
+        </div>
+
+        <div class="panel search-panel">
+          <div class="eyebrow">Destination</div>
+          <div style="font-size:20px; font-weight:800;">Where to?</div>
+          <div class="search-row">
+            <input id="destinationInput" value="Coffee near me" placeholder="Search destination" />
+            <button class="action-btn primary" onclick="goDestination()">Go</button>
+          </div>
+        </div>
+
+        <div class="panel status-panel">
+          <div class="eyebrow">Drive status</div>
+          <div class="status-grid">
+            <div class="status-item"><span>Weather</span><strong>72° clear</strong></div>
+            <div class="status-item"><span>Battery</span><strong>91%</strong></div>
+            <div class="status-item"><span>Traffic</span><strong>Light</strong></div>
+            <div class="status-item"><span>Signal</span><strong>Strong</strong></div>
+          </div>
+        </div>
+
+        <div class="panel route-card">
+          <div class="route-top">
+            <div>
+              <div class="eyebrow">Current route</div>
+              <div style="font-size:26px; font-weight:800;">Downtown route</div>
+            </div>
+            <div class="route-banner">➡ Right in 600 ft</div>
+          </div>
+          <div class="meta-grid">
+            <div class="meta"><div class="label">ETA</div><div class="value">4:22 PM</div></div>
+            <div class="meta"><div class="label">Time</div><div class="value">18 min</div></div>
+            <div class="meta"><div class="label">Distance</div><div class="value">8.4 mi</div></div>
+          </div>
+          <div class="actions">
+            <button class="action-btn primary" onclick="openMaps(document.getElementById('destinationInput').value)">Open Apple Maps</button>
+            <button class="action-btn" onclick="openMaps('Gas station near me')">Gas</button>
+            <button class="action-btn" onclick="openMaps('Home')">Home</button>
+          </div>
+        </div>
+
+        <div class="panel media-panel">
+          <div class="eyebrow">Now playing</div>
+          <div style="font-size:22px; font-weight:800;">Night Drive</div>
+          <div style="color:var(--muted); margin-top:4px;">The Midnight Coast</div>
+          <div class="album"></div>
+          <div class="progress"><div></div></div>
+          <div class="control-row">
+            <button class="mini-btn" onclick="showToast('Previous track')">⏮</button>
+            <button class="mini-btn primary" onclick="togglePlay()" id="playBtn">⏸ Pause</button>
+            <button class="mini-btn" onclick="showToast('Next track')">⏭</button>
+            <button class="mini-btn" onclick="openMusic()">Open</button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const clock = document.getElementById('clock');
+    const toast = document.getElementById('toast');
+    const playBtn = document.getElementById('playBtn');
+    let playing = true;
+    let dayMode = false;
+
+    function updateClock() {
+      const now = new Date();
+      clock.textContent = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    }
+    updateClock();
+    setInterval(updateClock, 30000);
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function openMaps(query) {
+      const q = encodeURIComponent(query || 'Destination');
+      window.location.href = `https://maps.apple.com/?q=${q}`;
+    }
+
+    function goDestination() {
+      const value = document.getElementById('destinationInput').value.trim() || 'Coffee near me';
+      openMaps(value);
+    }
+
+    function openMusic() {
+      window.location.href = 'https://www.pandora.com';
+    }
+
+    function togglePlay() {
+      playing = !playing;
+      playBtn.textContent = playing ? '⏸ Pause' : '▶ Play';
+      showToast(playing ? 'Playback resumed' : 'Playback paused');
+    }
+
+    function toggleMode() {
+      dayMode = !dayMode;
+      if (dayMode) {
+        document.documentElement.style.setProperty('--bg1', '#eef5ff');
+        document.documentElement.style.setProperty('--bg2', '#dbe9ff');
+        document.documentElement.style.setProperty('--line', 'rgba(14,24,44,0.10)');
+        document.documentElement.style.setProperty('--text', '#101a2a');
+        document.documentElement.style.setProperty('--muted', 'rgba(16,26,42,0.62)');
+        showToast('Day mode on');
+      } else {
+        document.documentElement.style.setProperty('--bg1', '#020613');
+        document.documentElement.style.setProperty('--bg2', '#09162c');
+        document.documentElement.style.setProperty('--line', 'rgba(255,255,255,0.10)');
+        document.documentElement.style.setProperty('--text', '#f5fbff');
+        document.documentElement.style.setProperty('--muted', 'rgba(245,251,255,0.62)');
+        showToast('Night mode on');
+      }
+    }
+
+    function focusMode() {
+      showToast('This is the single-screen home layout');
+    }
+  </script>
+</body>
+</html>
