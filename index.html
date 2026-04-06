@@ -818,7 +818,41 @@
       });
 
       directionsService = new google.maps.DirectionsService();
-      directionsRenderer = new google.maps.DirectionsRenderfunction goDestination() {
+      directionsRenderer = new google.maps.DirectionsRenderer({
+        suppressMarkers: false,
+        polylineOptions: {
+          strokeColor: '#7be8ff',
+          strokeWeight: 6
+        }
+      });
+      directionsRenderer.setMap(map);
+    }
+
+    function setMapQuery(query) {
+      const value = (query || '').trim();
+      if (!value || !map) return;
+      currentDestination = value;
+      destinationInput.value = value;
+      routeTitle.textContent = value;
+      routePanel.classList.add('show');
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode({ address: value }, (results, status) => {
+        if (status === 'OK' && results[0]) {
+          const location = results[0].geometry.location;
+          map.panTo(location);
+          map.setZoom(13);
+          marker.setPosition(location);
+          if (currentView === 'map') {
+            headlineText.textContent = `Route to ${value}`;
+          }
+          showToast(`Destination set: ${value}`);
+        } else {
+          showToast('Location not found');
+        }
+      });
+    }
+
+    function goDestination() {
       const value = destinationInput.value.trim();
       if (!value) {
         showToast('Enter a destination first');
@@ -864,39 +898,6 @@
       }, () => {
         setMapQuery(value);
       });
-      setView('map');
-    }
-
-    function clearRoutey || '').trim();
-      if (!value || !map) return;
-      currentDestination = value;
-      destinationInput.value = value;
-      routeTitle.textContent = value;
-      routePanel.classList.add('show');
-      const geocoder = new google.maps.Geocoder();
-      geocoder.geocode({ address: value }, (results, status) => {
-        if (status === 'OK' && results[0]) {
-          const location = results[0].geometry.location;
-          map.panTo(location);
-          map.setZoom(13);
-          marker.setPosition(location);
-          if (currentView === 'map') {
-            headlineText.textContent = `Route to ${value}`;
-          }
-          showToast(`Destination set: ${value}`);
-        } else {
-          showToast('Location not found');
-        }
-      });
-    }
-
-    function goDestination() {
-      const value = destinationInput.value.trim();
-      if (!value) {
-        showToast('Enter a destination first');
-        return;
-      }
-      setMapQuery(value);
       setView('map');
     }
 
