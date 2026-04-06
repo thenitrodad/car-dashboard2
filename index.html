@@ -51,20 +51,20 @@
     .shell {
       height: 100%;
       display: grid;
-      grid-template-columns: 108px 1fr;
-      gap: 12px;
+      grid-template-columns: 96px 1fr;
+      gap: 10px;
     }
 
     .sidebar {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid var(--line);
-      border-radius: 32px;
-      backdrop-filter: blur(20px);
+      background: linear-gradient(180deg, rgba(5,18,38,0.96), rgba(7,24,48,0.94));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      backdrop-filter: blur(18px);
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 12px 10px;
+      padding: 10px 8px;
     }
 
     .brand {
@@ -92,26 +92,26 @@
 
     .nav {
       display: grid;
-      gap: 12px;
-      margin-top: 6px;
+      gap: 10px;
+      margin-top: 4px;
     }
 
     .nav-btn {
       width: 100%;
       border: none;
-      border-radius: 24px;
-      padding: 16px 8px;
+      border-radius: 22px;
+      padding: 14px 8px;
       cursor: pointer;
-      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
       color: var(--text);
       display: grid;
       justify-items: center;
-      gap: 9px;
-      font-size: 13px;
+      gap: 7px;
+      font-size: 12px;
       font-weight: 800;
       letter-spacing: 0.01em;
       transition: transform .15s ease, background .2s ease, color .2s ease, box-shadow .2s ease;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 18px rgba(0,0,0,0.18);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 18px rgba(0,0,0,0.18);
     }
 
     .nav-btn:active { transform: scale(.97); }
@@ -119,11 +119,11 @@
     .nav-btn.active {
       background: linear-gradient(180deg, #fafdff, #dceef8);
       color: #0a1320;
-      box-shadow: 0 14px 28px rgba(255,255,255,0.16);
+      box-shadow: 0 14px 28px rgba(255,255,255,0.14);
     }
 
     .nav-icon {
-      font-size: 26px;
+      font-size: 22px;
       line-height: 1;
     }
 
@@ -277,34 +277,41 @@
     }
 
     .search-panel {
-      top: 18px;
-      left: 18px;
-      width: 340px;
+      top: 16px;
+      left: 16px;
+      width: 296px;
       z-index: 6;
-      padding: 16px;
+      padding: 14px;
+      background: rgba(27, 43, 52, 0.72);
+      border: 1px solid rgba(255,255,255,0.07);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.22);
+      backdrop-filter: blur(20px);
     }
 
     .search-title {
-      font-size: 21px;
+      font-size: 18px;
       font-weight: 800;
       margin-bottom: 10px;
+      letter-spacing: -0.02em;
     }
 
     .search-row {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr 64px;
       gap: 10px;
+      align-items: center;
     }
 
     .search-row input {
-      flex: 1;
       min-width: 0;
-      border-radius: 18px;
-      border: 1px solid var(--line);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.07);
       background: rgba(255,255,255,0.07);
       color: var(--text);
-      padding: 14px 16px;
-      font-size: 16px;
+      padding: 13px 14px;
+      font-size: 15px;
       outline: none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
     }
 
     .search-row input::placeholder {
@@ -312,12 +319,16 @@
     }
 
     .search-btn {
+      width: 54px;
+      height: 54px;
       border: none;
-      background: linear-gradient(90deg, var(--accent), #dcfbff);
+      background: linear-gradient(135deg, var(--accent), #dcfbff);
       color: #08111b;
-      padding: 0 18px;
-      font-size: 17px;
+      border-radius: 50%;
+      font-size: 16px;
+      font-weight: 800;
       cursor: pointer;
+      box-shadow: 0 10px 22px rgba(123,232,255,0.24);
     }
 
     .quick-row {
@@ -328,18 +339,26 @@
     }
 
     .chip {
-      padding: 10px 12px;
-      font-size: 13px;
+      padding: 9px 11px;
+      font-size: 12px;
       cursor: pointer;
+      background: rgba(13, 24, 40, 0.42);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 999px;
+      color: var(--text);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.16);
     }
 
     .route-panel {
-      left: 14px;
-      bottom: 14px;
-      width: 390px;
-      z-index: 4;
+      left: 16px;
+      bottom: 16px;
+      width: 340px;
+      z-index: 5;
       padding: 16px;
       display: none;
+      background: rgba(20, 34, 46, 0.8);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 20px 44px rgba(0,0,0,0.24);
     }
 
     .route-panel.show { display: block; }
@@ -412,14 +431,54 @@
 
     .overlay-view {
       position: absolute;
-      right: 14px;
-      top: 92px;
-      bottom: 14px;
-      width: 340px;
-      z-index: 4;
+      right: 16px;
+      top: 16px;
+      bottom: 16px;
+      width: 320px;
+      z-index: 5;
       display: none;
       padding: 16px;
       overflow: auto;
+      background: rgba(20, 34, 46, 0.72);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 20px 44px rgba(0,0,0,0.24);
+    }
+
+    .clock-screen {
+      height: 100%;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      background: radial-gradient(circle at top, rgba(123,232,255,0.18), transparent 28%), linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border-radius: 24px;
+    }
+
+    .clock-eyebrow {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 12px;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+
+    .clock-time {
+      font-size: 92px;
+      line-height: 0.95;
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      margin-bottom: 12px;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    }
+
+    .clock-date {
+      font-size: 18px;
+      color: var(--muted);
+      font-weight: 600;
     }
 
     .overlay-view.active { display: block; }
@@ -573,6 +632,24 @@
 
     @media (max-width: 920px) {
       .app { padding: 8px; }
+      .shell { grid-template-columns: 82px 1fr; gap: 8px; }
+      .search-panel { left: 12px; top: 12px; width: 264px; }
+      .overlay-view { right: 10px; top: 12px; bottom: 10px; width: 250px; }
+      .route-panel { left: 10px; bottom: 10px; width: 290px; }
+      .meta-grid { grid-template-columns: 1fr; }
+      .nav-btn { padding: 12px 6px; font-size: 11px; }
+      .nav-icon { font-size: 20px; }
+      .clock-time { font-size: 70px; }
+      .clock-date { font-size: 15px; }
+    }
+      .shell { grid-template-columns: 82px 1fr; gap: 8px; }
+      .search-panel { left: 12px; top: 12px; width: 280px; }
+      .overlay-view { right: 10px; top: 12px; bottom: 10px; width: 250px; }
+      .route-panel { left: 10px; bottom: 10px; width: 290px; }
+      .meta-grid { grid-template-columns: 1fr; }
+      .nav-btn { padding: 12px 6px; font-size: 11px; }
+      .nav-icon { font-size: 20px; }
+    }
       .shell { grid-template-columns: 88px 1fr; gap: 8px; }
       .search-panel { left: 12px; top: 12px; width: 280px; }
       .overlay-view { right: 10px; top: 84px; bottom: 10px; width: 260px; }
@@ -617,6 +694,10 @@
               <div>Messages</div>
             </button>
             
+            <button class="nav-btn" data-view="clock">
+              <div class="nav-icon">🕒</div>
+              <div>Clock</div>
+            </button>
             <button class="nav-btn" id="modeToggleBtn">
               <div class="nav-icon">🌙</div>
               <div>Mode</div>
@@ -652,7 +733,6 @@
               <button class="chip" data-quick="Home">Home</button>
               <button class="chip" data-quick="Gas station near me">Gas</button>
               <button class="chip" data-quick="Coffee near me">Coffee</button>
-              <button class="chip" data-quick="Hotel near me">Hotel</button>
             </div>
           </section>
 
@@ -728,6 +808,14 @@
             </div>
           </section>
 
+          <section class="panel overlay-view" id="clockView">
+            <div class="clock-screen">
+              <div class="clock-eyebrow">RoadGlow Clock</div>
+              <div class="clock-time" id="clockLarge">6:27</div>
+              <div class="clock-date" id="clockDate">Tuesday · April 7</div>
+            </div>
+          </section>
+
           </div>
       </main>
     </div>
@@ -759,12 +847,21 @@
       map: null,
       music: document.getElementById('musicView'),
       calls: document.getElementById('callsView'),
-      messages: document.getElementById('messagesView')
+      messages: document.getElementById('messagesView'),
+      clock: document.getElementById('clockView')
     };
 
     function updateClock() {
       const now = new Date();
       clock.textContent = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      const large = document.getElementById('clockLarge');
+      const date = document.getElementById('clockDate');
+      if (large) {
+        large.textContent = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      }
+      if (date) {
+        date.textContent = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+      }
     }
 
     updateClock();
@@ -795,7 +892,8 @@
         map: currentDestination ? `Route to ${currentDestination}` : 'Beautiful drive dashboard',
         music: 'Music and media',
         calls: 'Calls',
-        messages: 'Messages'
+        messages: 'Messages',
+        clock: 'Clock'
       };
 
       headlineText.textContent = headlines[viewName] || 'Beautiful drive dashboard';
