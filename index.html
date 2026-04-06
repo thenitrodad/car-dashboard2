@@ -277,17 +277,18 @@
     }
 
     .search-panel {
-      top: 8px;
-      left: 8px;
-      width: 260px;
-      z-index: 6;
-      padding: 10px 12px;
-      background: rgba(27, 43, 52, 0.68);
-      border: 1px solid rgba(255,255,255,0.06);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.18);
-      backdrop-filter: blur(18px);
-      border-radius: 18px;
-    }
+  position: fixed;
+  top: 12px;
+  left: 100px; /* sits just to the right of sidebar */
+  width: 240px;
+  z-index: 100;
+  padding: 10px 12px;
+  background: rgba(27, 43, 52, 0.68);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+  backdrop-filter: blur(18px);
+  border-radius: 18px;
+}
 
     .search-title {
       font-size: 16px;
@@ -759,48 +760,19 @@
           </section>
 
           <section class="panel overlay-view" id="musicView">
-            <div class="eyebrow">Media</div>
-            <div class="overlay-title">Night Drive</div>
-            <div class="overlay-sub">The Midnight Coast</div>
-            <div class="album"></div>
-            <div class="progress"><div></div></div>
-            <div class="music-control-shell">
-              <button class="music-side-btn" id="prevBtn">⏮</button>
-              <button class="music-play-btn" id="playBtn">Pause</button>
-              <button class="music-side-btn" id="nextBtn">⏭</button>
-            </div>
-            <div class="info-list">
-              <div class="info-item"><span>Playlist</span><strong>Chill Drive</strong></div>
-              <div class="info-item"><span>Next up</span><strong>Warm Lights</strong></div>
-              <div class="info-item"><span>Source</span><strong>Dashboard player</strong></div>
-            </div>
-          </section>
+  <div class="overlay-title">Music</div>
+  <div class="overlay-sub">Connect your music app</div>
+</section>
 
           <section class="panel overlay-view" id="callsView">
-            <div class="eyebrow">Calls</div>
-            <div class="overlay-title">Favorites</div>
-            <div class="overlay-sub">Quick people and recent contacts</div>
-            <div class="info-list">
-              <div class="info-item"><span>Wife</span><strong>Recent</strong></div>
-              <div class="info-item"><span>Dad</span><strong>Mobile</strong></div>
-              <div class="info-item"><span>Mom</span><strong>Mobile</strong></div>
-              <div class="info-item"><span>Work</span><strong>Main line</strong></div>
-              <div class="info-item"><span>Roadside</span><strong>Saved</strong></div>
-            </div>
-          </section>
+  <div class="overlay-title">Calls</div>
+  <div class="overlay-sub">Connect phone for calling</div>
+</section>
 
           <section class="panel overlay-view" id="messagesView">
-            <div class="eyebrow">Messages</div>
-            <div class="overlay-title">Recent chats</div>
-            <div class="overlay-sub">A simple in-dash message view</div>
-            <div class="info-list">
-              <div class="info-item"><span>Wife</span><strong>On our way</strong></div>
-              <div class="info-item"><span>Dad</span><strong>Call me when free</strong></div>
-              <div class="info-item"><span>Mom</span><strong>Love you guys</strong></div>
-              <div class="info-item"><span>Work</span><strong>Meeting moved</strong></div>
-              <div class="info-item"><span>Family Group</span><strong>Dinner tonight?</strong></div>
-            </div>
-          </section>
+  <div class="overlay-title">Messages</div>
+  <div class="overlay-sub">Connect phone for messages</div>
+</section>
 
           <section class="panel overlay-view" id="clockView">
             <div class="clock-screen">
