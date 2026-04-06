@@ -277,41 +277,41 @@
     }
 
     .search-panel {
-      top: 16px;
-      left: 16px;
-      width: 296px;
+      top: 8px;
+      left: 8px;
+      width: 260px;
       z-index: 6;
-      padding: 14px;
-      background: rgba(27, 43, 52, 0.72);
-      border: 1px solid rgba(255,255,255,0.07);
-      box-shadow: 0 16px 36px rgba(0,0,0,0.22);
-      backdrop-filter: blur(20px);
+      padding: 10px 12px;
+      background: rgba(27, 43, 52, 0.68);
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+      backdrop-filter: blur(18px);
+      border-radius: 18px;
     }
 
     .search-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 800;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
       letter-spacing: -0.02em;
     }
 
     .search-row {
       display: grid;
-      grid-template-columns: 1fr 64px;
-      gap: 10px;
+      grid-template-columns: 1fr 52px;
+      gap: 8px;
       align-items: center;
     }
 
     .search-row input {
       min-width: 0;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.07);
-      background: rgba(255,255,255,0.07);
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.06);
       color: var(--text);
-      padding: 13px 14px;
-      font-size: 15px;
+      padding: 10px 12px;
+      font-size: 14px;
       outline: none;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
     }
 
     .search-row input::placeholder {
@@ -319,16 +319,16 @@
     }
 
     .search-btn {
-      width: 54px;
-      height: 54px;
+      width: 48px;
+      height: 48px;
       border: none;
       background: linear-gradient(135deg, var(--accent), #dcfbff);
       color: #08111b;
       border-radius: 50%;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 800;
       cursor: pointer;
-      box-shadow: 0 10px 22px rgba(123,232,255,0.24);
+      box-shadow: 0 8px 18px rgba(123,232,255,0.22);
     }
 
     .quick-row {
@@ -723,16 +723,10 @@
 
         <div class="panel-stack">
           <section class="panel search-panel">
-            <div class="eyebrow">Destination</div>
             <div class="search-title">Where to?</div>
             <div class="search-row">
               <input id="destinationInput" placeholder="Enter destination" />
               <button class="search-btn" id="goBtn">Go</button>
-            </div>
-            <div class="quick-row">
-              <button class="chip" data-quick="Home">Home</button>
-              <button class="chip" data-quick="Gas station near me">Gas</button>
-              <button class="chip" data-quick="Coffee near me">Coffee</button>
             </div>
           </section>
 
@@ -742,7 +736,7 @@
                 <div class="eyebrow">Current route</div>
                 <div class="route-title" id="routeTitle">Destination</div>
               </div>
-              <div class="route-banner">➡ Right in 600 ft</div>
+              <div class="route-banner" id="routeBanner">Route ready</div>
             </div>
             <div class="meta-grid">
               <div class="meta-card">
@@ -834,6 +828,7 @@
     const destinationInput = document.getElementById('destinationInput');
     const routePanel = document.getElementById('routePanel');
     const routeTitle = document.getElementById('routeTitle');
+    const routeBanner = document.getElementById('routeBanner');
     const headlineText = document.getElementById('headlineText');
     const navButtons = Array.from(document.querySelectorAll('.nav-btn[data-view]'));
     const chips = Array.from(document.querySelectorAll('.chip[data-quick]'));
@@ -950,6 +945,12 @@
       });
     }
 
+    function stripHtml(html) {
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      return div.textContent || div.innerText || '';
+    }
+
     function goDestination() {
       const value = destinationInput.value.trim();
       if (!value) {
@@ -959,6 +960,7 @@
       currentDestination = value;
       routeTitle.textContent = value;
       routePanel.classList.add('show');
+      routeBanner.textContent = 'Finding route...';
 
       if (!navigator.geolocation) {
         setMapQuery(value);
@@ -980,9 +982,19 @@
             directionsRenderer.setDirections(result);
             const leg = result.routes[0]?.legs?.[0];
             if (leg) {
-              document.querySelectorAll('.meta-value')[0].textContent = new Date(Date.now() + leg.duration.value * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-              document.querySelectorAll('.meta-value')[1].textContent = leg.duration.text;
-              document.querySelectorAll('.meta-value')[2].textContent = leg.distance.text;
+              const values = document.querySelectorAll('.meta-value');
+              values[0].textContent = new Date(Date.now() + leg.duration.value * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+              values[1].textContent = leg.duration.text;
+              values[2].textContent = leg.distance.text;
+
+              const firstStep = leg.steps?.[0];
+              if (firstStep) {
+                const instruction = stripHtml(firstStep.instructions);
+                const distance = firstStep.distance?.text || '';
+                routeBanner.textContent = distance ? `${instruction} in ${distance}` : instruction;
+              } else {
+                routeBanner.textContent = 'Route ready';
+              }
             }
             if (currentView === 'map') {
               headlineText.textContent = `Route to ${value}`;
@@ -990,11 +1002,13 @@
             showToast(`Route ready: ${value}`);
           } else {
             setMapQuery(value);
+            routeBanner.textContent = 'Could not calculate route';
             showToast('Could not calculate route');
           }
         });
       }, () => {
         setMapQuery(value);
+        routeBanner.textContent = 'Location needed for turn-by-turn route';
       });
       setView('map');
     }
@@ -1003,6 +1017,7 @@
       currentDestination = '';
       destinationInput.value = '';
       routePanel.classList.remove('show');
+      routeBanner.textContent = 'Route ready';
       if (directionsRenderer) directionsRenderer.set('directions', null);
       if (map && marker) {
         const start = { lat: 44.3148, lng: -85.6024 };
