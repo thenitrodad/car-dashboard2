@@ -1,18 +1,756 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="RoadGlow" />
+  <meta name="theme-color" content="#08111d" />
+  <title>RoadGlow</title>
+
+  <style>
+    :root {
+      --bg: #08111d;
+      --panel: rgba(16, 26, 40, 0.72);
+      --panel-soft: rgba(16, 26, 40, 0.52);
+      --line: rgba(255,255,255,0.08);
+      --text: #f4fbff;
+      --muted: rgba(244,251,255,0.62);
+      --accent: #8aeaff;
+      --shadow: 0 18px 40px rgba(0,0,0,0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      bottom: 10px;
+      width: 92px;
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 10px 8px;
+      border-radius: 26px;
+      background: linear-gradient(180deg, rgba(6,15,28,0.96), rgba(7,20,38,0.94));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 6px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    .nav-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      width: 100%;
+      border: none;
+      border-radius: 22px;
+      padding: 14px 6px;
+      cursor: pointer;
+      color: var(--text);
+      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 22px rgba(0,0,0,0.18);
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 12px;
+      transition: transform .12s ease, box-shadow .2s ease, background .2s ease, color .2s ease;
+    }
+
+    .nav-btn:active {
+      transform: scale(.97);
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(180deg, #fafdff, #deeff8);
+      color: #07111b;
+      box-shadow: 0 14px 28px rgba(255,255,255,0.14);
+    }
+
+    .nav-icon {
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .main {
+      position: fixed;
+      inset: 10px 10px 10px 112px;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      background: rgba(255,255,255,0.02);
+    }
+
+    #map {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .search-panel {
+      position: fixed;
+      top: 10px;
+      left: 118px;
+      width: 250px;
+      z-index: 20;
+      padding: 10px 12px;
+      border-radius: 18px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .search-title {
+      font-size: 15px;
+      font-weight: 800;
+      margin-bottom: 7px;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr 48px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .search-row input {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 11px 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .search-row input::placeholder {
+      color: rgba(244,251,255,0.38);
+    }
+
+    .search-btn {
+      width: 48px;
+      height: 48px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent), #dcfbff);
+      color: #05111b;
+      font-size: 15px;
+      font-weight: 800;
+      box-shadow: 0 10px 22px rgba(138,234,255,0.2);
+    }
+
+    .time-pill {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 20;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 14px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .route-panel {
+      position: fixed;
+      left: 118px;
+      bottom: 10px;
+      width: 320px;
+      border-radius: 22px;
+      padding: 14px;
+      z-index: 20;
+      display: none;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .route-panel.show {
+      display: block;
+    }
+
+    .route-small {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .route-title {
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 10px;
+    }
+
+    .route-banner {
+      padding: 12px 14px;
+      border-radius: 16px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #06111d;
+      background: linear-gradient(135deg, var(--accent), #d9fbff);
+      box-shadow: 0 10px 22px rgba(138,234,255,0.18);
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .meta-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 15px;
+      padding: 10px;
+    }
+
+    .meta-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    .meta-value {
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .route-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .soft-btn {
+      flex: 1;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.07);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 11px 12px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .soft-btn.primary {
+      background: linear-gradient(135deg, var(--accent), #dbfbff);
+      color: #05111b;
+      border: none;
+    }
+
+    .side-view,
+    .clock-screen {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      bottom: 10px;
+      width: 320px;
+      border-radius: 24px;
+      padding: 18px;
+      z-index: 20;
+      display: none;
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .side-view.active,
+    .clock-screen.active {
+      display: block;
+    }
+
+    .overlay-title {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .overlay-sub {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+
+    .album-card {
+      height: 180px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.14), transparent 28%),
+        linear-gradient(135deg, rgba(40,70,90,0.8), rgba(138,234,255,0.18), rgba(255,255,255,0.04));
+      margin-bottom: 14px;
+    }
+
+    .connect-card {
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.05);
+      padding: 14px;
+      margin-top: 10px;
+    }
+
+    .connect-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .connect-big {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .connect-btn {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: linear-gradient(135deg, var(--accent), #dbfbff);
+      color: #05111b;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .clock-screen {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(14,22,34,0.76), rgba(12,18,28,0.82));
+    }
+
+    .clock-screen.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .clock-kicker {
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .clock-time {
+      font-size: 92px;
+      line-height: 0.92;
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      margin-bottom: 12px;
+      text-shadow: 0 12px 32px rgba(0,0,0,0.18);
+    }
+
+    .clock-date {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%) translateY(14px);
+      opacity: 0;
+      pointer-events: none;
+      transition: .2s ease;
+      z-index: 40;
+      border-radius: 999px;
+      padding: 12px 16px;
+      background: rgba(10, 18, 28, 0.9);
+      border: 1px solid var(--line);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: var(--shadow);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
 <body>
-<div id="map" style="height:100vh;"></div>
 
-<script>
-function initMap() {
-  new google.maps.Map(document.getElementById("map"), {
-    center: { lat: 40, lng: -100 },
-    zoom: 4
-  });
-}
-</script>
+  <aside class="sidebar">
+    <div class="brand">🚗</div>
+    <div class="nav-stack">
+      <button class="nav-btn active" data-view="map">
+        <div class="nav-icon">🗺️</div>
+        <div>Map</div>
+      </button>
+      <button class="nav-btn" data-view="music">
+        <div class="nav-icon">🎵</div>
+        <div>Music</div>
+      </button>
+      <button class="nav-btn" id="callsBtn">
+        <div class="nav-icon">📞</div>
+        <div>Calls</div>
+      </button>
+      <button class="nav-btn" id="messagesBtn">
+        <div class="nav-icon">💬</div>
+        <div>Messages</div>
+      </button>
+      <button class="nav-btn" data-view="clock">
+        <div class="nav-icon">🕒</div>
+        <div>Clock</div>
+      </button>
+    </div>
+  </aside>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCoCxyWxvlNTV-AHCaLg2CXxeqFGr-8mEI&callback=initMap" async defer></script>
+  <main class="main">
+    <div id="map"></div>
+  </main>
 
+  <section class="search-panel">
+    <div class="search-title">Where to?</div>
+    <div class="search-row">
+      <input id="destinationInput" placeholder="Enter destination" />
+      <button class="search-btn" id="goBtn">Go</button>
+    </div>
+  </section>
+
+  <div class="time-pill">🕒 <span id="clockSmall">6:27 PM</span></div>
+
+  <section class="route-panel" id="routePanel">
+    <div class="route-small">Current route</div>
+    <div class="route-title" id="routeTitle">Destination</div>
+    <div class="route-banner" id="routeBanner">Route ready</div>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <div class="meta-label">ETA</div>
+        <div class="meta-value">--</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-label">Time</div>
+        <div class="meta-value">--</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-label">Distance</div>
+        <div class="meta-value">--</div>
+      </div>
+    </div>
+
+    <div class="route-actions">
+      <button class="soft-btn primary" id="startRouteBtn">Start</button>
+      <button class="soft-btn" id="clearRouteBtn">Clear</button>
+    </div>
+  </section>
+
+  <section class="side-view" id="musicView">
+    <div class="overlay-title">Music</div>
+    <div class="overlay-sub">Simple clean media handoff</div>
+    <div class="album-card"></div>
+    <div class="connect-card">
+      <div class="connect-label">Music app</div>
+      <div class="connect-big">Use your favorite player</div>
+      <button class="connect-btn" id="musicOpenBtn">Open music app</button>
+    </div>
+  </section>
+
+  <section class="clock-screen" id="clockView">
+    <div class="clock-kicker">RoadGlow Clock</div>
+    <div class="clock-time" id="clockLarge">6:27</div>
+    <div class="clock-date" id="clockDate">Tuesday, April 7</div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let map;
+    let marker;
+    let directionsService;
+    let directionsRenderer;
+    let currentDestination = '';
+    let currentView = 'map';
+
+    const destinationInput = document.getElementById('destinationInput');
+    const routePanel = document.getElementById('routePanel');
+    const routeTitle = document.getElementById('routeTitle');
+    const routeBanner = document.getElementById('routeBanner');
+    const toast = document.getElementById('toast');
+    const navButtons = Array.from(document.querySelectorAll('.nav-btn[data-view]'));
+    const musicView = document.getElementById('musicView');
+    const clockView = document.getElementById('clockView');
+
+    function initMap() {
+      const start = { lat: 44.3148, lng: -85.6024 };
+
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: start,
+        zoom: 7,
+        disableDefaultUI: true,
+        zoomControl: false,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+        gestureHandling: 'greedy'
+      });
+
+      marker = new google.maps.Marker({
+        position: start,
+        map: map
+      });
+
+      directionsService = new google.maps.DirectionsService();
+      directionsRenderer = new google.maps.DirectionsRenderer({
+        suppressMarkers: false,
+        polylineOptions: {
+          strokeColor: '#8aeaff',
+          strokeWeight: 6
+        }
+      });
+
+      directionsRenderer.setMap(map);
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function stripHtml(html) {
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      return div.textContent || div.innerText || '';
+    }
+
+    function setActiveNav(view) {
+      navButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.view === view));
+    }
+
+    function setView(view) {
+      currentView = view;
+      setActiveNav(view);
+
+      musicView.classList.remove('active');
+      clockView.classList.remove('active');
+
+      if (view === 'music') {
+        musicView.classList.add('active');
+      }
+
+      if (view === 'clock') {
+        clockView.classList.add('active');
+      }
+    }
+
+    function setMapQuery(query) {
+      const value = (query || '').trim();
+      if (!value || !map) return;
+
+      currentDestination = value;
+      routeTitle.textContent = value;
+
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode({ address: value }, (results, status) => {
+        if (status === 'OK' && results[0]) {
+          const location = results[0].geometry.location;
+          map.panTo(location);
+          map.setZoom(13);
+          marker.setPosition(location);
+          routePanel.classList.add('show');
+          showToast(`Destination set: ${value}`);
+        } else {
+          showToast('Location not found');
+        }
+      });
+    }
+
+    function goDestination() {
+      const value = destinationInput.value.trim();
+      if (!value) {
+        showToast('Enter a destination first');
+        return;
+      }
+
+      currentDestination = value;
+      routeTitle.textContent = value;
+      routeBanner.textContent = 'Finding route...';
+      routePanel.classList.add('show');
+
+      if (!navigator.geolocation) {
+        setMapQuery(value);
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const origin = {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude
+        };
+
+        directionsService.route({
+          origin,
+          destination: value,
+          travelMode: google.maps.TravelMode.DRIVING
+        }, (result, status) => {
+          if (status === 'OK') {
+            directionsRenderer.setDirections(result);
+
+            const leg = result.routes[0]?.legs?.[0];
+            if (leg) {
+              const values = document.querySelectorAll('.meta-value');
+              values[0].textContent = new Date(Date.now() + leg.duration.value * 1000)
+                .toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+              values[1].textContent = leg.duration.text;
+              values[2].textContent = leg.distance.text;
+
+              const firstStep = leg.steps?.[0];
+              if (firstStep) {
+                const instruction = stripHtml(firstStep.instructions);
+                const distance = firstStep.distance?.text || '';
+                routeBanner.textContent = distance
+                  ? `${instruction} in ${distance}`
+                  : instruction;
+              } else {
+                routeBanner.textContent = 'Route ready';
+              }
+            }
+
+            showToast(`Route ready: ${value}`);
+          } else {
+            setMapQuery(value);
+            routeBanner.textContent = 'Could not calculate route';
+            showToast('Could not calculate route');
+          }
+        });
+      }, () => {
+        setMapQuery(value);
+        routeBanner.textContent = 'Location needed for full route';
+      });
+
+      setView('map');
+    }
+
+    function clearRoute() {
+      currentDestination = '';
+      destinationInput.value = '';
+      routePanel.classList.remove('show');
+      routeBanner.textContent = 'Route ready';
+
+      if (directionsRenderer) directionsRenderer.set('directions', null);
+
+      if (map && marker) {
+        const start = { lat: 44.3148, lng: -85.6024 };
+        map.panTo(start);
+        map.setZoom(7);
+        marker.setPosition(start);
+      }
+
+      const values = document.querySelectorAll('.meta-value');
+      values[0].textContent = '--';
+      values[1].textContent = '--';
+      values[2].textContent = '--';
+
+      showToast('Route cleared');
+    }
+
+    function openCalls() {
+      window.location.href = 'tel:';
+    }
+
+    function openMessages() {
+      window.location.href = 'sms:';
+    }
+
+    function openMusic() {
+      showToast('Open your music app from iPad');
+    }
+
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clockSmall').textContent =
+        now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      document.getElementById('clockLarge').textContent =
+        now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      document.getElementById('clockDate').textContent =
+        now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+    }
+
+    document.getElementById('goBtn').addEventListener('click', goDestination);
+    document.getElementById('clearRouteBtn').addEventListener('click', clearRoute);
+    document.getElementById('startRouteBtn').addEventListener('click', goDestination);
+    document.getElementById('callsBtn').addEventListener('click', openCalls);
+    document.getElementById('messagesBtn').addEventListener('click', openMessages);
+    document.getElementById('musicOpenBtn').addEventListener('click', openMusic);
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => setView(btn.dataset.view));
+    });
+
+    destinationInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') goDestination();
+    });
+
+    updateClock();
+    setInterval(updateClock, 30000);
+    setView('map');
+  </script>
+
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCoCxyWxvlNTV-AHCaLg2CXxeqFGr-8mEIE&callback=initMap"></script>
 </body>
 </html>
